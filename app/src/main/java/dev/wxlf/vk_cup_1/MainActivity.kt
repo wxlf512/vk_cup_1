@@ -12,12 +12,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import dev.wxlf.vk_cup_1.presentation.screens.InterestingCategoriesScreen
+import dev.wxlf.vk_cup_1.presentation.viewmodels.InterestingCategoriesViewModel
 import dev.wxlf.vk_cup_1.ui.theme.Vk_cup_1Theme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +50,8 @@ fun MainScreen() {
             startDestination = "vk_cup_1://interesting_categories"
         ) {
             composable("vk_cup_1://interesting_categories") {
-                InterestingCategoriesScreen(navController)
+                val interestingCategoriesViewModel = hiltViewModel<InterestingCategoriesViewModel>()
+                InterestingCategoriesScreen(interestingCategoriesViewModel, navController)
             }
 
         }

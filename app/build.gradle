@@ -1,7 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android' version '2.44.2' apply false
 }
+
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     namespace 'dev.wxlf.vk_cup_1'
@@ -70,4 +74,13 @@ dependencies {
     // Navigation
     def nav_version = "2.5.3"
     implementation "androidx.navigation:navigation-compose:$nav_version"
+
+    // Hilt
+    def hilt_version = "2.44.2"
+    implementation "com.google.dagger:hilt-core:$hilt_version"
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    def viewModelHiltVersion = "1.0.0"
+    implementation "androidx.hilt:hilt-navigation-compose:$viewModelHiltVersion"
+    kapt "androidx.hilt:hilt-compiler:$viewModelHiltVersion"
 }
