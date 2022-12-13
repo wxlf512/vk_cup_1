@@ -1,6 +1,5 @@
 package dev.wxlf.vk_cup_1.presentation.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,10 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,11 +18,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowRow
 import dev.wxlf.vk_cup_1.domain.entity.CategoryDisplayableItem
+import dev.wxlf.vk_cup_1.presentation.Routes
 import dev.wxlf.vk_cup_1.presentation.common.InterestingCategoryEvent
 import dev.wxlf.vk_cup_1.presentation.common.InterestingCategoryViewState
 import dev.wxlf.vk_cup_1.presentation.viewmodels.InterestingCategoriesViewModel
 
-@SuppressLint("MutableCollectionMutableState")
+
 @Composable
 fun InterestingCategoriesScreen(
     viewModel: InterestingCategoriesViewModel,
@@ -35,8 +32,18 @@ fun InterestingCategoriesScreen(
     val uiState by viewModel.uiState.collectAsState()
     val content = remember { mutableStateListOf<CategoryDisplayableItem>() }
     when (uiState) {
-        is InterestingCategoryViewState.Loaded -> content.addAll((uiState as InterestingCategoryViewState.Loaded).data)
-        InterestingCategoryViewState.Loading -> {}
+        is InterestingCategoryViewState.Loaded -> {
+            content.clear()
+            content.addAll((uiState as InterestingCategoryViewState.Loaded).data)
+        }
+        InterestingCategoryViewState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color(0xFFFF5317)
+                )
+            }
+        }
     }
 
     Column() {
@@ -53,7 +60,18 @@ fun InterestingCategoriesScreen(
                 fontSize = 16.sp
             )
             Button(
-                onClick = { viewModel.obtainEvent(InterestingCategoryEvent.Skip) },
+                onClick = {
+                    viewModel.obtainEvent(InterestingCategoryEvent.Skip)
+                    navController.navigate(Routes.Skip.route) {
+                        navController.graph.startDestinationRoute?.let { route ->
+                            popUpTo(route) {
+                                saveState = true
+                            }
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF1C1C1C),
                     contentColor = Color(0xFFFFFFFF)
@@ -158,7 +176,10 @@ fun InterestingCategoriesScreen(
                 if (done) {
                     Button(
                         modifier = Modifier.padding(top = 4.dp, bottom = 34.dp),
-                        onClick = { viewModel.obtainEvent(InterestingCategoryEvent.Continue(content)) },
+                        onClick = {
+                            viewModel.obtainEvent(InterestingCategoryEvent.Continue(content))
+                            navController.navigate(Routes.Continue.route)
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFFFFFFF),
                             contentColor = Color(0xFF000000)
